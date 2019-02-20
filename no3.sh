@@ -1,3 +1,4 @@
+
 #check if pass passed
 pass=string
 k=1
@@ -11,16 +12,26 @@ do
 		lw=0
 		up=0
 		int=0
-		for ch in pass
+		for (( i=0; i<${#pass}; i++));
 		do
-			if [[ $ch == [a-z] ]]
-				then let lw=$lw+1;fi
-			if [[ $ch == [A-Z] ]]
-        	                then let up=$up+1;fi
-			if [[ $ch == [0-9] ]]
-        	                then let int=$int+1;fi
+			#echo "test"
+			#echo "${value:i:1}"
+			if [[ ${pass:i:1} =~ ^[a-z]+$ ]]
+			then
+				#echo "test"
+				let lw=$lw+1
+			fi
+			if [[ ${pass:i:1} =~ ^[A-Z]+$ ]]
+        	        then
+				let up=$up+1
+			fi
+			if [[ ${pass:i:1} =~ ^[0-9]+$ ]]
+        	        then
+				let int=$int+1
+			fi
 		done
-		[ $lw -gt 0 ] && [  $up -gt 0 ] && [ $int -gt 0 ]
+		echo $lw $up $int
+		! [ $lw -gt "0" ] || ! [  $up -gt "0" ] ||  ! [ $int -gt "0" ]
 
 	do :;done
 
@@ -45,4 +56,3 @@ do
 	break
 done
 echo "$pass" > $file$i.txt
-
