@@ -1,4 +1,3 @@
-
 #check if pass passed
 pass=string
 k=1
@@ -38,21 +37,35 @@ do
 	i=1
 	file=/root/Documents/ss1/pw/password
 	value=coba
+	for f in $file*
+	do
+		value=$(<$file$i.txt)
+                if test "$value" = "$pass"
+                then
+                        break
+                fi
+	done
+	if test "$value" = "$pass"
+        then
+        	echo "ulang lagi"
+		continue
+        fi
+
 	while [ -s "$file$i.txt" ]
 	do
 		#echo "test"
-		value=$(<$file$i.txt)
-		if test "$value" = "$pass"
-		then
-			break
-		fi
+		#value=$(<$file$i.txt)
+		#if test "$value" = "$pass"
+		#then
+		#	break
+		#fi
 		let i=$i+1
 	done
-	if test "$value" = "$pass"
-	then
-		echo "ulang lagi"
-		continue
-	fi
+	#if test "$value" = "$pass"
+	#then
+	#	echo "ulang lagi"
+	#	continue
+	#fi
 	break
 done
 echo "$pass" > $file$i.txt
