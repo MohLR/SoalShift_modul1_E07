@@ -39,7 +39,8 @@ do
 	value=coba
 	for f in $file*
 	do
-		value=$(<$file$i.txt)
+		echo "$f"
+		value=$(<$f)
                 if test "$value" = "$pass"
                 then
                         break
