@@ -24,7 +24,11 @@ Pendekripsian terjadi di bagian __base64 -d $f | xxd -r > $target/$i.jpg__
 Setiap gambar akan didekode (__-d__) menggunakan __Base64__, di pipe menuju __xxd__, dan direverse
 (__-r__) untuk dijadikan gambar kembali (__> $target/$1.jpg__)
 
-__//Crontab otewe__
+Sedangkan untuk cronjobnya (silahkan pathnya diganti sesuai komputer masing-masing)
+```
+14 14 14 2 * /bin/bash soal1.sh
+0 0 * 2 5 /bin/bash soal1.sh
+```
 
 # Nomor 2
 ### Bagian 2A
@@ -141,7 +145,21 @@ fi
 Jika password lolos semua pengecekan, maka tinggal diredirect ke file.
 
 # Nomor 4
-Nomor 4 dasarnya adalah _caesar cipher_, dan implementasinya sebagai berikut
+### Enkripsi
+Nomor 4 dasarnya adalah _caesar cipher_ dengan jam pada saat script dijalankan sebagai key, 
+dan implementasinya sebagai berikut
+```bash
+#Definisi fungsi
+chr() {
+	[ "$1" -lt 256 ] || return 1
+	printf "\\$(printf '%03o' "$1")"
+}
+
+ord() {
+	LC_CTYPE=C printf '%d' "'$1"
+}
+```
+Algoritma enkripsi
 ```bash
 #mencari kode ASCII dari suatu karakter, value adalah isi dari syslog, dan i adalah iteratornya
 num=`ord ${value:i:1};`
@@ -174,6 +192,8 @@ elif [ $num -ge 97 ] && [ $num -le 122 ] #Huruf kecil
 		echo $enc > "$fname".txt
 fi
 ```
+Algoritma diatas dijalankan berulang-ulang sebanyak panjangnya _syslog_
+
 Untuk penamaan file, maka digunakan _date_.
 ```bash
 jam="`date +\"%H\"`"
@@ -182,6 +202,78 @@ tanggal="`date +\"%d\"`"
 bulan="`date +\"%m\"`"
 tahun="`date +\"%Y\"`"
 
-fname="$jam:$menit $tanggal-$bulan-$tahun" #Sesuaikan dengan komputer masing-masing
+fname="$jam:$menit $tanggal-$bulan-$tahun" #Path sesuaikan dengan komputer masing-masing
 ```
-__//Crontab otewe__
+Sedangkan untuk cronjobnya (silahkan pathnya diganti sesuai komputer masing-masing)
+```
+0 * * * * /bin/bash soal4.sh
+```
+
+### Dekripsi
+Untuk mendekripsi, prosesnya hanya perlu dibalik, yang perlu dilakukan pertama yaitu 
+mengekstrak jam dari nama file
+```bash
+read fname
+if [[ ${fname:2:1} =~ ^[0-9]+$ ]]
+	then
+		jam="${fname:1:1}${fname:2:1}"
+fi
+```
+Kemudian dijalankan proses dekripsi (Fungsi sama seperti enkripsi)
+```bash
+num=`ord ${value:i:1};`
+
+if [ $num -lt 65 ] || [ $num -gt 122 ]
+	then
+		enc="$enc${value:i:1};"
+elif [ $num -ge 65 ] && [ $num -le 90 ]
+	then
+		let "num=num-64"
+		let "num=num-jam"
+   		if [ $num -lt 0 ]
+    		then
+      			let "num=num+25"
+   		fi
+   		let "num=num+64"
+   		enc="$enc`chr $num`"
+
+elif [ $num -ge 97 ] && [ $num -le 122 ]
+  	then
+ 	   let "num=num-96"
+ 	   let "num=num-jam"
+		if [ $num -lt 0 ]
+			then
+				let "num=num+25"
+		fi
+		let "num=num+96"
+		enc="$enc`chr $num`"
+		echo $enc > "dc".txt
+fi
+```
+Hasil dekripsi diredirect ke file _dc.txt_
+
+# Nomor 5
+Nomor 5 cukup 2 baris
+```bash
+mkdir /home/$USER/modul1
+cat /var/log/syslog | awk '/cron/ && !/sudo/' | awk 'NF < 13' >> /home/$USER/modul1/$(date +%Y%m%d%H%M%S).log
+```
+Penjelasannya,
+```bash
+cat /var/log/syslog
+```
+concatenate file /var/log/syslog ke stdout, kemudian di pipe ke
+```bash
+awk '/cron/ && !/sudo/'
+```
+untuk mencari records yang mengandung cron tapi tidak mengandung sudo. Kemudian di pipe lagi ke
+```bash
+awk 'NF < 13'
+```
+untuk mencari records yang memiliki jumlah _field_ kurang dari 13. Hasilnya di redirect ke
+`/home/$USER/modul1/$(date +%Y%m%d%H%M%S).log`
+
+Untuk cronjobnya (sesuaikan pathnya)
+```
+2-30/6 * * * * /bin/bash soal5.sh
+```
