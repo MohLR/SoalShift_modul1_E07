@@ -270,8 +270,9 @@ untuk mencari records yang mengandung cron tapi tidak mengandung sudo. Kemudian 
 ```bash
 awk 'NF < 13'
 ```
-untuk mencari records yang memiliki jumlah _field_ kurang dari 13. Hasilnya di redirect ke
-`/home/$USER/modul1/$(date +%Y%m%d%H%M%S).log`
+untuk mencari records yang memiliki jumlah _field_ kurang dari 13.
+
+Hasilnya di redirect ke `/home/$USER/modul1/$(date +%Y%m%d%H%M%S).log`
 
 Untuk cronjobnya (sesuaikan pathnya)
 ```
