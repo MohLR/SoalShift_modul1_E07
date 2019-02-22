@@ -12,7 +12,8 @@ menit="`date +\"%M\"`"
 tanggal="`date +\"%d\"`"
 bulan="`date +\"%m\"`"
 tahun="`date +\"%Y\"`"
-
+jam=$((10#$jam))
+echo $jam
 fname="/root/Documents/ss1/$jam:$menit $tanggal-$bulan-$tahun"
 #echo "$fname"
 
@@ -23,32 +24,33 @@ do
 	#echo "${#value}"
 	num=`ord ${value:i:1};`
 	#echo $num
-	if [ $num -lt 65 ] || [ $num -gt 122 ]
+	if [ $num -ge 65 ] && [ $num -le 90 ]
 	then
-		enc="$enc${value:i:1};"
-	elif [ $num -ge 65 ] && [ $num -le 90 ]
-	then
-		let "num=num-64"
+		let "num=num-65"
 		let "num=num+jam"
-   	if [ $num -gt 25 ]
-    	then
-      		let "num=num-25"
-    	fi
-    	let "num=num+64"
-    	enc="$enc`chr $num`"
-  	#echo $num
+   		if [ $num -gt 25 ]
+    		then
+    	  		let "num=num-25"
+    		fi
+    		let "num=num+65"
+    		enc="$enc`chr $num`"
+  		#echo $num
   	elif [ $num -ge 97 ] && [ $num -le 122 ]
   	then
- 	   let "num=num-96"
+ 	   let "num=num-97"
  	   let "num=num+jam"
-	if [ $num -gt 25 ]
- 	then
-     		let "num=num-25"
-    	fi
-    	let "num=num+96"
-    	enc="$enc`chr $num`"
-	#terlalu lambat bro jadi di append pelan2 aja
+		if [ $num -gt 25 ]
+	 	then
+	     		let "num=num-25"
+	    	fi
+	    	let "num=num+97"
+	    	enc="$enc`chr $num`"
+		#terlalu lambat bro jadi di append pelan2 aja
+	else
+                enc="$enc${value:i:1}"
+
+	fi
 	echo $enc > "$fname".txt
-fi
+
 done
 #echo $enc
